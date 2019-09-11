@@ -24,7 +24,7 @@ export function drop(event) {
 
 
 
-import {renderAll} from "/templates.js";
+import {renderAll} from "./templates.js";
 export function focusElement(type, element){
     if (element.type && element.type=="text" && element.messages.size < 10) {
         console.log("not enough messages stored, fetching more!");
