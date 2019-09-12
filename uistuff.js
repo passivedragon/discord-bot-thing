@@ -1,4 +1,4 @@
-import {renderAll} from "templates.js";
+import {renderAll} from "discord-bot-thing/templates.js";
 renderAll(client, {});
 let loginButton = document.querySelector("#login");
 let tokenfield = document.querySelector("#token");
