@@ -12,6 +12,7 @@ body {
     height: 100vh;
     resize: none;
     margin: 0px;
+    border-radius: 20%;
     /* Stolen from the site */
     --foreground-1: #fff;
     --foreground-2: #dcddde;
@@ -31,12 +32,15 @@ body {
     --debug-3: white;
 
     --channel-focussed: blue;
-    --focussed: red;
+    --focussed: #fff;
+    --focussed-bg: #999;
     --hover: grey;
 }
 
 img {
     pointer-events: none;
+    border: solid 0px;
+    border-radius: 50%;
 }
 
 @media only screen and (max-height: 2000px){
@@ -46,6 +50,40 @@ img {
 }
 
 
+.key {
+    position: relative;
+    color: inherit;
+    width: auto;
+    height: auto;
+    max-height: 5vh;
+    /* margin: 1%; */
+    background-color: var(--background-1);
+    box-shadow: 0 0 2px 2px black;
+    animation: loading 5s linear both infinite;
+}
+.key:hover {
+    background-color: var(--foreground-effect-1);
+    box-shadow: 0 0 4px 4px black;
+    animation: loading 5s linear all;
+}
+
+.key:active {
+    border-color: inherit;
+    background-color: var(--foreground-effect-2);
+}
+
+.key:focus {
+    border-color: var(--foreground-effect-1);
+}
+
+body > * > * > * :hover {
+    background-color: var(--focussed-bg);
+}
+
+
+
+
+
 ::-webkit-scrollbar {
     width: 10px;
     background-color: var(--background-3);
@@ -53,7 +91,6 @@ img {
     scrollbar-base-color:
 }
 ::-webkit-scrollbar-thumb {
-    color: red;
     background-color: var(--foreground-3);
 }
 
@@ -75,9 +112,6 @@ img {
 
 
 
-/* body > h1{
-    color: red;
-} */
 
 .hidden {display:none;}
 
@@ -117,9 +151,10 @@ img {
     z-index: 98;
 }
 
-/* .login > * > *{
+.login > * {
     position: relative;
-} */
+    width: auto;
+}
 
 .login > .grid-container {
     grid-template-columns: auto auto auto;
@@ -140,7 +175,7 @@ img {
 }
 
 #token:focus {
-    border-color: red;
+    border-color: var(--foreground-1);
 }
 
 
@@ -184,11 +219,12 @@ img {
 }
 
 .server {
-    display: block;
+    display: flex;
     color: var(--foreground-1);
     /* height: 50px; */
     max-width: 150px;
     min-width: 120px;
+    border-radius: 5%;
     /* border: 5px; */
     /* background-image: url("./default.png");
     background-size: cover;
@@ -197,14 +233,14 @@ img {
 
 .server > {
     /* display: block; */
-    display: relative;
+    display: block;
     top: 0px;
     color: var(--foreground-2);
 }
 
 .server > img {
     /* display: block; */
-    display: inline-block;
+    display: block;
     height: 48px;
     width: 48px;
 }
@@ -233,19 +269,41 @@ img {
 
 
 .users {
+    display: flex;
+    flex-direction: column;
     min-width: 140px;
     overflow-y: auto;
     max-width: 300px;
 }
 
 .user {
+    display: flex;
     text-align: left;
     vertical-align: middle;
+    align-items: center;
 }
 
 .user > img {
+    display: block;
     width: 48px;
     height: 48px;
+    border-width: medium;
+}
+
+.online > img {
+    border-color: green;
+}
+
+.offline > img {
+    border-color: grey;
+}
+
+.idle > img {
+    border-color: yellow;
+}
+
+.dnd > img {
+    border-color: red;
 }
 
 .inline {
@@ -280,6 +338,7 @@ img {
     /* border: 2px solid var(--foreground-2); */
     /* margin: 5px; */
     border-width: 0px;
+    /* border-radius: 5% 0% 0% 5%; */
     border-top: 5px;
     border-style: solid;
     border-color: var(--dividers);
@@ -322,53 +381,99 @@ textarea {
 
 
 .context {
+    /* display: flex; */
     position: absolute;
-    width: 10vw;
-}
-
-
-.key {
-    position: relative;
-    color: inherit;
-    width: auto;
-    height: auto;
-    max-height: 5vh;
-    /* margin: 1%; */
-    background-color: var(--background-1);
-    box-shadow: 0 0 2px 2px black;
-    animation: loading 5s linear both infinite;
-}
-.key:hover {
-    background-color: var(--foreground-effect-1);
-    box-shadow: 0 0 4px 4px black;
-    animation: loading 5s linear all;
-}
-
-.key:active {
-    border-color: inherit;
-    background-color: var(--foreground-effect-2);
-}
-
-.key:focus {
-    border-color: var(--foreground-effect-1);
-}
-
-body > * > * > * :hover {
+    /* width: 15vw; */
     background-color: red;
+    z-index: 99;
+    width: auto;
+    transform: translateX(-100%);
 }
 
-.focussed {
+.context > button {
+    /* width: 100%; */
+    background-color: var(--foreground-effect-1);
+}
+
+
+nav {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-end;
+}
+
+.dropdown {
+    position: relative;
+    /* display: flex; */
+}
+
+.dropdown > .menu {
+    display: none;
+    /* min-width: 100%; */
+    position: absolute;
+}
+
+.dropdown:hover > .menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.dropdown > * > .dropdown > .menu {
+    /* transform: translateX(-100%); */
+    height: 100%;
+    transform: translate3d(calc(0px - 100%), calc(0px - 100%), 0);
+    /* height: auto; */
+}
+
+
+
+.channel :not(.category) {
+    /* transform: translateX(5%); */
+    padding-left: 5%;
+    width: auto;
+}
+
+.category {
+    position: relative;
+    text-rendering: optimizeLegibility;
+}
+
+/* .category > * {
+    display: inherit;
+} */
+
+.collapsed > svg {
+    transform: rotate(-90deg) translate(-30%, 20%);
+}
+
+svg {
+    transition: transform 0.5s;
+}
+
+.collapsed > .channel {
+    display: none;
+}
+
+
+
+.focussed,  {
     border-color: red;
     margin: 5px;
     background-color: var(--background-effect-1);
     color: var(--focussed);
 }
 
+.focused < .collapsed {
+    background-color: red;
+}
+
 
 
 @keyframes alertAnimation {
-    0%: {color: inherit; background-color: inherit;}
-    100%:{color: var(--focussed); background-color: var(--focussed);}
+    0%   {color: inherit; background-color: inherit;}
+    100% {background-color: var(--focussed-bg);}
 }
 
 /* IDEA: adds a blinking to channels with new messages, perhaps to be overwritten with a noalerts class? */
@@ -376,7 +481,9 @@ body > * > * > * :hover {
     /* color: var(--focussed);
     background-color: var(--focussed); */
     /* transition: all 2s repeat infinite; */
-    color: red;
-    background-color: red;
-    animation: alertAnimation 1s infinite;
+    /* color: var(--foreground-1); */
+    /* color: red; */
+    /* background-color: var(--background-effect-3); */
+    animation: alertAnimation 1.5s infinite;
+    animation-timing-function: cubic-bezier(0.65, 0.05, 0.36, 1);
 }

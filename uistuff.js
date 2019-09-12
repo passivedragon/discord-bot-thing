@@ -1,4 +1,4 @@
-import {renderAll} from "./templates.js";
+import {renderAll} from "/templates.js";
 renderAll(client, {});
 let loginButton = document.querySelector("#login");
 let tokenfield = document.querySelector("#token");
@@ -56,6 +56,12 @@ client.on("reconnect", onLogin);
 client.on("disconnect", onLogout);
 
 
+function scrollDownHistory(){
+    let historyElement = document.querySelector(".history")
+    historyElement.scrollTop = historyElement.scrollHeight;
+
+}
+
 
 
 function submitMessage(event){
@@ -82,6 +88,9 @@ function submitMessage(event){
     console.log(activetab["send"](message));
 
     chatinput.value = "";//empty the field
+
+    //scroll down to new message
+    scrollDownHistory();
 }
 
 
@@ -109,9 +118,10 @@ function updateInterface(obj){
     //handle notifications for incoming messages
 
     //maybe with a notify class? Already working on it!
+    //is implemented
 }
 
-let historyElement = document.querySelector(".history");
+
 client.on("ready", ()=>{
     onLogin();
     console.log("Login successful, preparing stuff");
@@ -123,8 +133,7 @@ client.on("ready", ()=>{
         focussed.channel.fetchMessages(20).then(() => {
           updateInterface();
           //start scrolled to bottom
-          console.warn(historyElement.scrollTop, historyElement.scrollHeight)
-          historyElement.scrollTop = historyElement.scrollHeight;
+          scrollDownHistory();
         });
     }
 
@@ -143,9 +152,15 @@ client.on("message", (msg)=>{
         if (msg.guild != focussed.guild) {
             msg.guild.notify = true;
         }
+    } else {
+        let historyElement = document.querySelector(".history")
+        if (historyElement.scrollTop==historyElement.scrollHeight) {
+            scrollDownHistory();
+        }
     }
     console.log(msg);
     updateInterface();
+    document.querySelectorAll(".loading").forEach(element => element.hidden=true);
 });
 
 client.on("messageUpdate", updateInterface);
@@ -166,7 +181,21 @@ client.on("error", console.warn);
 
 
 
+window.onclick = (event)=>{
+    // console.warn(event);
 
+    let contextMenu = document.querySelector(".context");
+    if (!contextMenu.classList.contains("hidden") && !event.target.classList.contains("hascontext")) {
+        if (!event.target.classList.contains("context")) {
+            console.log("shouldn't work");
+            console.log(event.target.classList)
+
+            contextMenu.classList.toggle("hidden");
+            focussed.object = false;
+            console.warn("tried to hide the context menu");
+        }
+    }
+};
 
 
 
@@ -179,12 +208,3 @@ client.on("error", console.warn);
 //auto fetch new messages if scrolled to top
 
 // TODO: Force it to hibernate for a set amount of time before allowing reuse
-historyElement.onscroll = function(event){
-    if (historyElement.scrollTop < 50) {
-        if (focussed.channel && focussed.channel.type == "text") {
-            console.warn("fetching messages after scrolling");
-            focussed.channel.fetchMessages(20).then(updateInterface);
-        }
-    }
-    // console.log(historyElement.scrollTop);
-}

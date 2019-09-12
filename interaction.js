@@ -1,6 +1,7 @@
 
 export function test(event){
     console.log(event);
+    console.log(event.srcElement);
 }
 
 
@@ -24,20 +25,30 @@ export function drop(event) {
 
 
 
-import {renderAll} from "./templates.js";
+import {renderAll} from "/templates.js";
 export function focusElement(type, element){
-    if (element.type && element.type=="text" && element.messages.size < 10) {
-        console.log("not enough messages stored, fetching more!");
-        element.fetchMessages(20)
-          .then(()=>renderAll(client, focussed))
-          .then(e=>{
-            console.log("fetched 20 more messages");
+    // console.log(type, element);
+    focussed[type] = element;
 
+    if (element) {
+
+    }
+    if (element.type && element.type=="text") {
+        if (element.messages.size < 10) {
+            console.log("not enough messages stored, fetching more!");
+            element.fetchMessages(20)
+              .then(()=>renderAll(client, focussed))
+              .then(e=>{
+                console.log("fetched 20 more messages");
+
+                let historyElement = document.querySelector(".history");//scroll after loading messages
+                historyElement.scrollTop = historyElement.scrollHeight;
+              })
+              .catch(console.error);
+        } else {
             let historyElement = document.querySelector(".history");
             historyElement.scrollTop = historyElement.scrollHeight;
-          })
-          .catch(console.error);
-        // return;
+        }
     }
 
     if (type=="guild" && focussed.guild.id != element.id) {//autoselect system channel if selected guild is switched
@@ -49,18 +60,57 @@ export function focusElement(type, element){
         element.notify = false;
     }
 
-    // console.log(type, element);
-    focussed[type] = element;
     renderAll(client, focussed);
+}
+
+
+export function showUserInfo(event, userid){
+    // console.log("looking up user with id: "+userid);
+    if (client.user.id == userid) {
+        alert("You should know who you are!");
+        return;
+    }
+
+    let contextMenu = document.querySelector(".context");
+
+    contextMenu.style.top = event.pageY+"px";
+    contextMenu.style.left = event.pageX+"px";
+    if (contextMenu) {
+
+    }
+    console.log(event.clientY);
+
+    focussed.object = {id:userid};//probably not necessary, but just in case the fetch doesn't work perfectly
+    client.fetchUser(userid).then(user => {
+        // console.log(user);
+
+
+        focussed.object = user;
+
+        // alert(JSON.stringify(user));
+
+        if (!contextMenu.classList.contains("hidden")) {
+            //do stuff to make it close if clicked somewhere else or something
+            //is handled in uistuff.js, as a window.onclick
+        } else {
+            contextMenu.classList.toggle("hidden");//shows it
+            // focussed.object = false;
+        }
+    });
 
 }
 
 
-export function showUserInfo(userid){
-    // console.log("looking up user with id: "+userid);
-    client.fetchUser(userid).then(user => {
-        console.log(user);
-        alert(JSON.stringify(user));
-    });
-    document.querySelector(".context").hidden = false;
+export function fetchMessages(event){
+    // let historyElement = event.srcElement;
+    // console.log(event);
+    if (event.srcElement.scrollTop < 50) {
+        if (focussed.channel && focussed.channel.type == "text") {
+            console.warn("fetching messages after scrolling");
+            focussed.channel.fetchMessages(20).then(()=>{
+              renderAll(client, focussed);
+            });
+        }
+    }
+    // console.log(historyElement.scrollTop);
 }
