@@ -25,7 +25,7 @@ export function drop(event) {
 
 
 
-import {renderAll} from "/templates.js";
+import {renderAll} from "discord-bot-thing/templates.js";
 export function focusElement(type, element){
     // console.log(type, element);
     focussed[type] = element;
